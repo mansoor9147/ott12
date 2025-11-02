@@ -1,6 +1,14 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Use the configured REACT_APP_API_URL at build time. If it's not provided
+// and we're running in production, default to the deployed Render backend so
+// the Vercel build will still talk to the correct API even if env vars were
+// not set during the build.
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://ott-platform-1-88oj.onrender.com/api'
+    : 'http://localhost:5000/api');
 
 const api = axios.create({
   baseURL: API_URL,
