@@ -3,7 +3,7 @@ import AdminSidebar from '../../components/AdminSidebar';
 import Loading from '../../components/Loading';
 import subscriptionService from '../../services/subscriptionService';
 import { toast } from 'react-toastify';
-import { Plus, Check, Edit } from 'lucide-react';
+import { Plus, Check } from 'lucide-react';
 
 const AdminSubscriptions = () => {
   const [plans, setPlans] = useState([]);
@@ -153,7 +153,17 @@ const AdminSubscriptions = () => {
                     }}
                     className="flex-1 bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
                   >
-                    <Edit className="w-4 h-4 inline mr-2" />
+                    {/* Inline pencil SVG to avoid relying on a named export that caused a build lint error */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4 inline mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5h6M4 21l7-7 3 3 7-7-3-3-7 7-3-3L4 21z" />
+                    </svg>
                     Edit
                   </button>
                 </div>
