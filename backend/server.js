@@ -25,8 +25,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // CORS
+// CORS: allow the configured FRONTEND_URL, localhost for local dev,
+// and any Vercel deployments (e.g. https://<project>.vercel.app).
+// This uses a function to validate origin against allowed origins.
+const allowedOrigins = [];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+allowedOrigins.push('http://localhost:3000');
+// Allow Vercel preview/production domains
+allowedOrigins.push(/https?:\/\/.*\.vercel\.app$/);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., server-to-server, Postman)
+    if (!origin) return callback(null, true);
+
+    const allowed = allowedOrigins.some((o) => {
+      if (o instanceof RegExp) return o.test(origin);
+      return o === origin;
+    });
+
+    if (allowed) return callback(null, true);
+    return callback(new Error('CORS policy: This origin is not allowed'), false);
+  },
   credentials: true,
 }));
 
