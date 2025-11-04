@@ -19,16 +19,21 @@ const seedData = async () => {
   try {
     await connectDB();
 
-    // Create admin user
-    const adminExists = await User.findOne({ email: process.env.ADMIN_EMAIL });
+    // Create admin user - check both email and phone to avoid duplicates
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ottplatform.com';
+    const adminPhone = '+1234567890';
+    
+    const adminExists = await User.findOne({ 
+      $or: [{ email: adminEmail }, { phone: adminPhone }] 
+    });
     
     if (!adminExists) {
       await User.create({
         name: 'Admin',
-        email: process.env.ADMIN_EMAIL || 'admin@ottplatform.com',
+        email: adminEmail,
         password: process.env.ADMIN_PASSWORD || 'Admin@123',
         role: 'admin',
-        phone: '+1234567890',
+        phone: adminPhone,
       });
       console.log('✅ Admin user created');
     } else {

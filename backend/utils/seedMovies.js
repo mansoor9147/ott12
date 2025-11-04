@@ -266,20 +266,21 @@ const seedMovies = async () => {
     if (existingVideos > 0) {
       console.log(`ℹ️  Database already has ${existingVideos} videos`);
       console.log('💡 Skipping seed to avoid duplicates');
+      await mongoose.disconnect();
       process.exit(0);
     }
 
     // Get admin user
     const admin = await User.findOne({ role: 'admin' });
     if (!admin) {
-      console.error('❌ Admin user not found. Run "npm run seed" first');
-      process.exit(1);
+      console.log('⚠️  Admin user not found, videos will be created without uploader');
+      // Don't exit, continue without admin ID
     }
 
-    // Add uploadedBy field
+    // Add uploadedBy field if admin exists
     const moviesWithUploader = premiumMovies.map(movie => ({
       ...movie,
-      uploadedBy: admin._id
+      ...(admin && { uploadedBy: admin._id })
     }));
 
     // Insert movies

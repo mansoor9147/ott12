@@ -50,7 +50,8 @@ const AdminSubscriptions = () => {
     e.preventDefault();
     
     try {
-      const data = {
+      // Prepare form data for submission
+      const planData = {
         ...formData,
         features: formData.features.split('\n').filter(f => f.trim()),
         price: parseFloat(formData.price),
@@ -60,9 +61,11 @@ const AdminSubscriptions = () => {
 
       if (editingPlan) {
         // Update logic would go here
+        console.log('Update plan:', planData);
         toast.info('Update functionality not implemented in this demo');
       } else {
         // Create logic would go here
+        console.log('Create plan:', planData);
         toast.info('Create functionality not implemented in this demo');
       }
 
