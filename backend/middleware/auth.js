@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// JWT Secret with fallback
+const JWT_SECRET = process.env.JWT_SECRET || '2b5d94eb644c2edf7c4e1a46b716e137517e3bb0e6101f2dd01f6785a6ae1de0a8e6193c495d3aea3c5eb53f4a42c69ac964b520b834a8aedcdf69369c503386';
+
 // Protect routes - verify JWT token
 exports.protect = async (req, res, next) => {
   let token;
@@ -17,7 +20,7 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = await User.findById(decoded.id);
 
     if (!req.user) {
