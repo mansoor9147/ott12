@@ -19,13 +19,17 @@ const seedData = async () => {
   try {
     await connectDB();
 
-    // Create admin user - check both email and phone to avoid duplicates
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ottplatform.com';
+    // Create admin user - ALWAYS check by phone first since it has unique index
     const adminPhone = '+1234567890';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ottplatform.com';
     
-    const adminExists = await User.findOne({ 
-      $or: [{ email: adminEmail }, { phone: adminPhone }] 
-    });
+    // Check if admin exists by phone (most reliable due to unique index)
+    let adminExists = await User.findOne({ phone: adminPhone });
+    
+    // Also check by email if not found by phone
+    if (!adminExists) {
+      adminExists = await User.findOne({ email: adminEmail });
+    }
     
     if (!adminExists) {
       try {
