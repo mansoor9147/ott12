@@ -293,9 +293,16 @@ const seedMovies = async () => {
       console.log(`   ${index + 1}. ${movie.title} (${movie.releaseYear}) - ${movie.genre.join(', ')}`);
     });
 
+    await mongoose.disconnect();
     process.exit(0);
   } catch (error) {
     console.error('❌ Error seeding movies:', error);
+    await mongoose.disconnect();
+    // Don't fail deployment if movies already exist
+    if (error.code === 11000) {
+      console.log('ℹ️  Movies may already exist, continuing...');
+      process.exit(0);
+    }
     process.exit(1);
   }
 };

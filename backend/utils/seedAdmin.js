@@ -28,14 +28,23 @@ const seedData = async () => {
     });
     
     if (!adminExists) {
-      await User.create({
-        name: 'Admin',
-        email: adminEmail,
-        password: process.env.ADMIN_PASSWORD || 'Admin@123',
-        role: 'admin',
-        phone: adminPhone,
-      });
-      console.log('✅ Admin user created');
+      try {
+        await User.create({
+          name: 'Admin',
+          email: adminEmail,
+          password: process.env.ADMIN_PASSWORD || 'Admin@123',
+          role: 'admin',
+          phone: adminPhone,
+        });
+        console.log('✅ Admin user created');
+      } catch (createError) {
+        // Handle duplicate key error gracefully
+        if (createError.code === 11000) {
+          console.log('ℹ️  Admin user already exists (duplicate detected)');
+        } else {
+          throw createError;
+        }
+      }
     } else {
       console.log('ℹ️  Admin user already exists');
     }
@@ -111,7 +120,12 @@ const seedData = async () => {
 
     process.exit(0);
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    // Don't fail deployment for duplicate key errors
+    if (error.code === 11000) {
+      console.log('ℹ️  Seed completed with existing data');
+      process.exit(0);
+    }
+    console.error(`❌ Error: ${error.message}`);
     process.exit(1);
   }
 };
